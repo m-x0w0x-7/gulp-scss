@@ -2,7 +2,6 @@
 
 ## 各ファイルの説明
 - setting/ => 設定関係のファイル
-  * reboot.scss => reset用
   * var.scss => サイトの基本情報の定義ファイル
   * util.scss => 汎用的なCSSの設定ファイル
   * func.scss => 関数の設定ファイル
