@@ -1,0 +1,14 @@
+{
+  "pages": {
+    "index": {
+      "id": "index",
+      "title": "トップページタイトル",
+      "description": "トップページディスクリプション"
+    },
+    "news-index": {
+      "id": "news-index",
+      "title": "ニュースページタイトル",
+      "description": "ニュースディスクリプション"
+    }
+  }
+}

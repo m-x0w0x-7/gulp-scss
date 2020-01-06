@@ -1,0 +1,524 @@
+// * ============================== * //
+
+// mixin setting
+// ex. breakpoint, box layout, link arrow etc.
+
+// * ============================== * //
+
+// break point
+// ----------------------------------------
+
+// useage
+// @include mq(large) { ... }
+$mq-breakpoints: (
+  'xsmall': 320px,
+  'small' : 600px,
+  'medium': 768px,
+  'large' : 1024px,
+  'xlarge': 1280px,
+);
+
+@mixin mq($breakpoint: medium) {
+  @media screen and (min-width: #{map-get($mq-breakpoints, $breakpoint)}) {
+    @content;
+  }
+}
+
+
+// box layout margin
+// ----------------------------------------
+
+// useage
+// @include itemBox(100px, null, 10px, 20px);
+// 不要なプロパティは null
+@mixin itemBox($width, $height, $margin:null, $padding:null) {
+  width: $width;
+  height: $height;
+  margin: $margin;
+  padding: $padding;
+}
+
+
+// link arrow
+// ----------------------------------------
+
+// useage
+// @include linkIcon(矢印の色)
+@mixin linkIcon($color: #333) {
+  &::before {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 10px;
+    height: 10px;
+    margin-top: -7px;
+    border-top: 3px  solid $color;
+    background-repeat: 3px solid $color;
+    transform: rotate(45deg);
+  }
+}
+
+
+// link color
+// ----------------------------------------
+$normal: #f00;
+$hover: #00f;
+@mixin link_color($n: $normal, $h: $hover) {
+  color: $n;
+  &:hover {
+    color: $h;
+    text-decoration: none;
+  }
+}
+
+@mixin link_color_lighten($n) {
+  color: $n;
+  &:hover {
+    color: lighten($n, 30%);
+    text-decoration: none;
+  }
+}
+
+
+// accept ratio calculation
+// ----------------------------------------
+
+// usaage
+// @include responsive_image(image-width, image-height);
+// Responsive Movie
+@mixin responsive_image($width: 16, $height: 9) {
+  position: relative;
+  padding-top: percentage($height / $width);
+  > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+
+// aspect ratio
+// ----------------------------------------
+@mixin aspect-ratio($width, $height, $image: null) {
+  display: block;
+  width: 100%;
+  height: 0;
+  padding-top: ($height / $width) * 100%;
+  @if $image != null {
+    background: url($image) 50% 50% no-repeat;
+    background-size: cover;
+  }
+}
+
+
+// gradation
+// ----------------------------------------
+
+// useage
+// @include linear-gradient(開始色、方向、明るくするパーセント);
+@mixin linear_gradient-_lighter($color: #f00, $way: to bottom, $percent: 20%) {
+  background-image: linear-gradient($color 0%, $way, lighten($color, $percent) 100%);
+}
+
+// @include linear-gradient(開始色、方向、暗くするパーセント);
+@mixin linear_gradient_darker($color: #f00, $way: to bottom, $percent: 20%) {
+  background-image: linear-gradient($color 0%, $way, darken($color, $percent) 100%);
+}
+
+
+// animation
+// ----------------------------------------
+@mixin anima {
+  @keyframes anima-example {
+    0% { transform: translate(0%, -100%); }
+    100% { transform: translate(0%, 0%); }
+  }
+  animation: anima-sample 0.9s linear 500ms 1;
+}
+
+
+// clearfix
+// ----------------------------------------
+@mixin clearfix {
+  &::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
+
+// IE-hacks
+// ----------------------------------------
+@mixin hack($hack_ver: null) {
+	@if $hack_ver == "ie10" { // IE10以上
+		@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+			@content;
+		}
+	}
+	@else if $hack_ver == "ie11" { // IE11以上
+		@at-root _:-ms-fullscreen,:root & {
+			@content;
+		}
+	}
+	@else if $hack_ver == 'notIE8' { // IE8じゃないとき(他のブラウザも含める)
+		@media all and (min-width: 0) {
+			@content;
+		}
+	}
+	@else if $hack_ver == 'edge' { // Edgeのみ
+		@supports (-ms-ime-align: auto) {
+			@content;
+		}
+	}
+}
+
+
+// image_triming
+// ----------------------------------------
+@mixin img_box($outerW, $outerH, $innerW: 100%, $innerH: auto) {
+	position: relative;
+  overflow: hidden;
+  width: $outerW;
+  height: $outerH;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate( -50%, -50% );
+    width: $innerW;
+    height: $innerH;
+  }
+}
+
+
+// central arrangement
+// falseにした場合はどちらかのみ
+// ----------------------------------------
+@mixin centering-elements($horizontal: true, $vertical: true) {
+  position: absolute;
+  @if $horizontal and $vertical {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } @else if $horizontal {
+    left: 50%;
+    transform: translate(-50%, 0);
+  } @else if $vertical {
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+
+// pseudo element（疑似要素）
+// ----------------------------------------
+@mixin pseudo-element($content: '', $position: absolute, $display: block) {
+  position: $position;
+  display: $display;
+  content: $content;
+}
+
+
+// skip text
+// ----------------------------------------
+@mixin text-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+// web font
+// ----------------------------------------
+@mixin font-face($family, $path, $weight: normal, $style: normal) {
+  @font-face {
+    font-family: $family;
+    src: url('#{$path}.woff2') format('woff2'),
+         url('#{$path}.woff') format('woff'),
+         url('#{$path}.ttf') format('truetype');
+    font-weight: $weight;
+    font-style: $style;
+  }
+}
+
+
+// checkbox
+// ----------------------------------------
+
+// useage
+// <input type="checkbox" id="checkbox01" name="demo" /><label for="checkbox01">foo</label>
+@mixin checkbox_01($color: $color_main) {
+  input[type="checkbox"] {
+    display: none;
+  }
+  label {
+    position: relative;
+    display: inline-block;
+    padding: 3px 3px 3px 22px;
+    cursor: pointer;
+  }
+  label::before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: -8px;
+    background: #fff;
+    border: 1px solid #ccc;
+  }
+  input[type="checkbox"]:checked + label::after {
+    position: absolute;
+    content: '';
+    top: 5px;
+    left: 3px;
+    width: 13px;
+    height: 5px;
+    border-left: 2px solid $color;
+    border-bottom: 2px solid $color;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+  }
+}
+
+@mixin checkbox_02($color: $color_main) {
+  input[type="checkbox"] {
+    display: none;
+  }
+  label {
+    position: relative;
+    display: inline-block;
+    padding: 3px 3px 3px 22px;
+    cursor: pointer;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+  }
+  label::before,
+  label::after {
+    position: absolute;
+    content: '';
+    -webkit-transition: all .2s;
+    transition: all .2s;
+  }
+  label::before {
+    top: 50%;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: -8px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  label::after {
+    opacity: 0;
+    top: 50%;
+    left: 3px;
+    width: 8px;
+    height: 4px;
+    margin-top: -4px;
+    border-left: 2px solid $color;
+    border-bottom: 2px solid $color;
+    -webkit-transform: rotate(-45deg) scale(.5);
+    transform: rotate(-45deg) scale(.5);
+  }
+  label:hover::before {
+    background: #fff;
+  }
+  input[type="checkbox"]:checked + label::before {
+    background: #fff;
+    border: 1px solid $color;
+  }
+  input[type="checkbox"]:checked + label::after {
+    opacity: 1;
+    -webkit-transform: rotate(-45deg) scale(1);
+    transform: rotate(-45deg) scale(1);
+  }
+}
+
+
+// radio button
+// ----------------------------------------
+
+// useage
+// <input type="radio" id="radio01" name="demo" /><label for="radio01">foo</label>
+@mixin radioBtn_01($color: $color_main) {
+  input[type="radio"] {
+    display: none;
+  }
+  label {
+    position: relative;
+    display: inline-block;
+    padding: 3px 3px 3px 20px;
+    cursor: pointer;
+  }
+  label::before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: -8px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 100%;
+  }
+  input[type="radio"]:checked + label::after {
+    position: absolute;
+    content: '';
+    top: 50%;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    background: $color;
+    border-radius: 100%;
+  }
+}
+
+@mixin radioBtn_02($color: $color_main) {
+  input[type="radio"] {
+    display: none;
+  }
+  label {
+    position: relative;
+    display: inline-block;
+    padding: 3px 3px 3px 20px;
+    cursor: pointer;
+  }
+  label::before,
+  label::after {
+    position: absolute;
+    content: '';
+    top: 50%;
+    border-radius: 100%;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+  }
+  label::before {
+    left: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: -8px;
+    background: #f3f3f3;
+    border: 1px solid #ccc;
+  }
+  label:hover::before {
+    background: #fff;
+  }
+  label::after {
+    opacity: 0;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    background: $color;
+    -webkit-transform: scale(2);
+    transform: scale(2);
+  }
+  input[type="radio"]:checked + label::before {
+    background: #fff;
+    border: 1px solid $color;
+  }
+  input[type="radio"]:checked + label::after {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+
+// hover underline
+// ----------------------------------------
+@mixin hover-underline($type: fade, $dir: null, $weight: 2px, $color: #000) {
+  @if $dir == null {
+    @if $type == fade {
+      $dir: 'top';
+    } @else if $type == slide {
+      $dir: 'center';
+    }
+  }
+
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  &::after {
+    position: absolute;
+    left: 0;
+    content: '';
+    width: 100%;
+    height: $weight;
+    background: $color;
+    @if $type == fade {
+      transition: .3s;
+      opacity: 0;
+      visibility: hidden;
+      @if $dir == bottom {
+        bottom: $weight * -4;
+      } @else {
+        bottom: $weight;
+      }
+    } @else if $type == slide {
+      bottom: $weight * -2;
+      transform: scale(0, 1);
+      transition: transform .3s;
+      @if $dir == left-right or $dir == right-in-left {
+        transform-origin: left top;
+      } @else if $dir == right-left or $dir == left-in-right {
+        transform-origin: right top;
+      } @else {
+        transform-origin: center top;
+      }
+    }
+  }
+  &:hover::after {
+    @if $type == fade {
+      bottom: $weight * -2;
+      opacity: 1;
+      visibility: visible;
+    } @else if $type == slide {
+      @if $dir == left-in-right {
+        transform-origin: left top;
+      } @else if $dir == right-in-left {
+        transform-origin: right top;
+      }
+      transform: scale(1, 1);
+    }
+  }
+}
+
+
+// arrow
+// ----------------------------------------
+@mixin arrow($value, $border-width, $border-color, $deg, $skew: null) {
+  content: "";
+  width: $value;
+  height: $value;
+  border-top: $border-width solid $border-color;
+  border-right: $border-width solid $border-color;
+  transform: rotate($deg) skew($skew);
+}
+
+
+// triangle
+// ----------------------------------------
+@mixin triangle($value, $dir, $border-width, $border-color) {
+  content: "";
+  width: 0;
+  height: 0;
+  border: $value solid transparent;
+  border-#{$dir}: $border-width solid $border-color;
+}
+
+
+
+
+
+
+// ----------------------------------------
+// ----------------------------------------

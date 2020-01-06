@@ -1,0 +1,49 @@
+// * ============================== * //
+
+// function setting
+// ex. background, sns icon etc.
+
+// * ============================== * //
+
+// background change
+// ----------------------------------------
+$nameList: top, about, company, contact;
+
+@each $name in $nameList {
+  .body-#{ $name } {
+    background-image: url('../img/#{ $name }/bg_img.png');
+  }
+}
+
+// sns icon
+// ----------------------------------------
+
+// Map型を使って定義
+$sns-config: (
+  colors: (
+    twitter: #55acee,
+    facebook: #315096,
+    line: #00c300
+  ),
+  size: (
+    sm: 25%,
+    md: 50%,
+    lg: 100%
+  )
+);
+
+// SNSアイコン
+.sns {
+  &_btn {
+    @each $name, $color in map-get($sns-config, 'colors') {
+      &.-#{ $name } {
+        background: $color url('/img/icon_#{ $name }.png') no-repeat center;
+      }
+    }
+    @each $size, $width in map-get($sns-config, 'size') {
+      &._#{ $size } {
+        width: $width;
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+// * ============================== * //
+
+// utility setting
+// ex. margin, padding etc.
+
+// * ============================== * //
+
+// for margin adjustment scss
+// ----------------------------------------
+$spaceClass: true !default; //余白調整用のclassを使うか使わないか
+$spacePadding: false !default; // paddingによる余白調整用のclassを使うか使わないか
+$endValue: 20 !default; // 生成するclassの数
+
+@if $spaceClass {
+  @for $i from 0 through $endValue {
+    .mt#{ $i * 5 } { margin-top: 5px * $i !important; }
+    .mb#{ $i * 5 } { margin-bottom: 5px * $i !important; }
+    .mr#{ $i * 5 } { margin-right: 5px * $i !important; }
+    .ml#{ $i * 5 } { margin-left: 5px * $i !important; }
+    @if $spacePadding {
+      .pt#{ $i * 5 } { padding-top: 5px * i !important }
+      .pb#{ $i * 5 } { padding-bottom: 5px * i !important }
+      .pr#{ $i * 5 } { padding-right: 5px * i !important }
+      .pl#{ $i * 5 } { padding-left: 5px * i !important }
+    }
+  }
+}
+
+
+// display
+// ----------------------------------------
+.pc_none {
+  @include mq(large) {
+    display: none;
+  }
+}
+
+.sp_none {
+  display: none;
+  @include mq(large) {
+    display: inline-block;
+  }
+}

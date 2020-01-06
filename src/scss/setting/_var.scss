@@ -1,0 +1,70 @@
+// * ============================== * //
+
+// variables setting
+// ex. width, color
+
+// * ============================== * //
+
+
+// width
+// ============================== //
+
+$width_site : 2000px;
+
+$width_site_inner : 1600px;
+
+$width_main : 780px;
+
+$width_side : calc( #{ $width_site_inner } - #{ $width_main } - 20px );
+
+
+// color
+// ============================== //
+
+$color_base : #fff;
+
+$color_main : #fff;
+
+$color_sub : #fff;
+
+$color_accent : #fff;
+
+$color_text : #333;
+
+$color_link : #f00;
+
+$color_link : #00f;
+
+$color_link_hover : #00f;
+
+$color_link_active : #00f;
+
+$color_link_visit : #00f;
+
+
+// font-family
+// ============================== //
+
+$font_gothic : "Avenir", "Helvetica Neue", "Helvetica", "Arial", "Hiragino Sans", "ヒラギノ角ゴシック", YuGothic, "Yu Gothic", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic";
+
+$font_mincho : Georgia, 游明朝, "Yu Mincho", YuMincho, "Hiragino Mincho ProN", HGS明朝E, メイリオ, Meiryo, serif;
+
+$font_gothic_yakuhan : YakuHanJPs, "Avenir", "Helvetica Neue", "Helvetica", "Arial", "Hiragino Sans", "ヒラギノ角ゴシック", YuGothic, "Yu Gothic", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic";
+
+$font_mincho_yakuhan : YakuHanMPs, Georgia, 游明朝, "Yu Mincho", YuMincho, "Hiragino Mincho ProN", HGS明朝E, メイリオ, Meiryo, serif;
+
+$font_awesome : "Font Awesome 5 Free";
+
+$font_awesome_brand : "Font Awesome 5 Brands";
+
+
+// transition
+// ============================== //
+
+$transition : all 0.5s ease;
+
+
+// radius
+// ============================== //
+
+$radius : 5px;

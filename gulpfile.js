@@ -15,6 +15,7 @@ const sass = require('gulp-sass');
 const glob = require('gulp-sass-glob');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
+const flexBugsFixes = require('postcss-flexbugs-fixes');
 
 // JS
 const webpackStream = require('webpack-stream');
@@ -26,9 +27,11 @@ const mozjpeg = require('imagemin-mozjpeg');
 const pngquant = require('imagemin-pngquant');
 
 // utility
-const browserSync = require('browser-sync');
+const browserSync = require('browser-sync').create();
 const notify = require('gulp-notify');
 const plumber = require('gulp-plumber');
+const gulpif = require('gulp-if');
+const del = require('del');
 
 
 const paths = {
@@ -46,21 +49,16 @@ const paths = {
 
 
 // pug
-function pug() {
+function pugFunc() {
   // JSONファイルの読み込みと変換
-  const configJsonData = fs.readFileSync( paths.pug + '/data/config.json' );
-  const configObj = JSON.parse( configJsonData );
-
-  // pugのデータ読み込み設定
-  const pugDataOption = {
-    config: configObj
-  };
+  const configPugData = fs.readFileSync(paths.pug + '/data/config.json');
+  const configPugObj = JSON.parse(configPugData);
 
   return gulp
     .src([ paths.pug + '/**/*.pug', '!' + paths.pug + '/**/_*.pug' ])
     .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
     .pipe(data(file => {
-      return pugDataOption;
+      return configPugObj;
     }))
     .pipe(pug({ pretty: true }))
     .pipe(gulp.dest( paths.root ))
@@ -69,7 +67,7 @@ function pug() {
 
 
 // ejs
-function ejs() {
+function ejsFunc() {
   // JSONファイルの読み込みと変換
   const configJsonData = fs.readFileSync( paths.ejs + '/data/config.json' );
   const configObj = JSON.parse( configJsonData );
@@ -79,7 +77,8 @@ function ejs() {
     config: configObj
   };
 
-  return gulp.src([ paths.ejs + '/**/*.ejs', '!' + paths.ejs + '/**/_*.ejs' ])
+  return gulp
+    .src([ paths.ejs + '/**/*.ejs', '!' + paths.ejs + '/**/_*.ejs' ])
     .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
     .pipe(ejs( ejsDataOption, {}, {} ))
     .pipe(rename({ extname: '.html' }))
@@ -92,26 +91,46 @@ function ejs() {
 // scss
 function scss() {
   const autoprefixerOption = {
-    grid: true,
-    browsers: [ 'last 2 versions' ]
+    grid: true
   };
-
   const postcssOption = [
     flexBugsFixes,
-    autoprefixer( autoprefixerOption ),
-    cssWring
+    autoprefixer( autoprefixerOption )
   ];
 
-  return gulp.src(paths.scss, { sourcemaps: true })
+  return gulp
+    .src(paths.scss + '/**/*.scss', { sourcemaps: true })
     .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
     .pipe(glob())
     .pipe(sass({
-      outputstyle: 'compressed'
+      outputStyle: 'expanded'
     }))
-    .pipe(postcss( postcssOption ))
+    .pipe(postcss(postcssOption))
     .pipe(gulp.dest( paths.css, {
       sourcemaps: './'
     } ))
+    .pipe(browserSync.reload({ stream: true }));
+}
+
+// scss build
+function scssBuild() {
+  const autoprefixerOption = {
+    grid: true
+  };
+  const postcssOption = [
+    flexBugsFixes,
+    autoprefixer( autoprefixerOption )
+  ];
+
+  return gulp
+    .src(paths.scss + '/**/*.scss', { sourcemaps: false })
+    .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
+    .pipe(glob())
+    .pipe(sass({
+      outputStyle: 'compressed'
+    }))
+    .pipe(postcss(postcssOption))
+    .pipe(gulp.dest(paths.css))
     .pipe(browserSync.reload({ stream: true }));
 }
 
@@ -144,7 +163,8 @@ function image() {
     })
   ];
 
-  return gulp.src( paths.image + '/*' )
+  return gulp
+  .src( paths.image + '/*' )
   .pipe(imagemin( imageminOption ))
   .pipe(gulp.dest( paths.img ))
   .pipe(browserSync.reload({ stream: true }));
@@ -153,7 +173,7 @@ function image() {
 
 // browser sync
 function serve(done) {
-  browserSync({
+  browserSync.init({
     // local
     server: {
       baseDir: paths.root
@@ -161,8 +181,8 @@ function serve(done) {
     // proxy
     // proxy: 'localhost',
     ghostMode: false,
-    open: 'external',
-    notify: false,
+    open: 'local',
+    notify: true,
   });
   done();
 }
@@ -170,6 +190,8 @@ function serve(done) {
 
 // watch
 function watch(done) {
+  gulp.watch(paths.pug + '/**/*.pug', gulp.parallel(pugFunc));
+  gulp.watch(paths.ejs + '/**/*.ejs', gulp.parallel(ejsFunc));
   gulp.watch(paths.scss + '/**/*.scss', gulp.parallel(scss));
   gulp.watch(paths.javascript + '/**/*.js', gulp.parallel(js));
   gulp.watch(paths.image + '/**/*', gulp.parallel(image));
@@ -177,8 +199,21 @@ function watch(done) {
 }
 
 
-// default task
+// clean
+function clean() {
+  return del(paths.root + '/**/*');
+}
+
+
+// default task(dev)
 exports.default = gulp.series(
-  gulp.parallel(scss, js, image),
+  gulp.parallel(pugFunc, ejsFunc, scss, js, image),
   gulp.parallel(serve, watch)
 );
+
+// default task(build)
+exports.build = gulp.series(
+  clean,
+  gulp.parallel(pugFunc, ejsFunc, scssBuild, js, image),
+  gulp.parallel(serve, watch)
+)
