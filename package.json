@@ -22,7 +22,7 @@
     "ie 11"
   ],
   "devDependencies": {
-    "autoprefixer": "^9.7.3",
+    "autoprefixer": "^9.7.5",
     "browser-sync": "^2.26.7",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
@@ -31,7 +31,7 @@
     "gulp-postcss": "^8.0.0",
     "gulp-sass": "^4.0.2",
     "gulp-sass-glob": "^1.1.0",
-    "postcss-flexbugs-fixes": "^4.1.0"
+    "postcss-flexbugs-fixes": "^4.2.0"
   },
   "private": true
 }
